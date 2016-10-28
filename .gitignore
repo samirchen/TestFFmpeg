@@ -1,0 +1,12 @@
+tutorial01/tutorial01
+tutorial02/tutorial02
+tutorial03/tutorial03
+tutorial04/tutorial04
+tutorial05/tutorial05
+tutorial06/tutorial06
+tutorial07/tutorial07
+
+*.o
+
+*.ppm
+*.mp4
