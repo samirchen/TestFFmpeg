@@ -70,10 +70,10 @@ int main(int argc, char *argv[]) {
 	AVCodec *pCodec = NULL;
 	AVFrame *pFrame = NULL;
 	AVFrame *pFrameRGB = NULL;
-	AVPacket packet;
-	int frameFinished;
 	int numBytes;
 	uint8_t *buffer = NULL;
+	AVPacket packet;
+	int frameFinished;
 	struct SwsContext *sws_ctx = NULL;
 
 	if (argc < 2) {
@@ -154,17 +154,17 @@ int main(int argc, char *argv[]) {
 	i = 0;
 	while (av_read_frame(pFormatCtx, &packet) >= 0) {
 		// Is this a packet from the video stream?
-		if(packet.stream_index==videoStream) {
+		if (packet.stream_index == videoStream) {
 			// Decode video frame
 			avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 
 			// Did we get a video frame?
 			if (frameFinished) {
 				// Convert the image from its native format to RGB.
-				sws_scale(sws_ctx, (uint8_t const * const *)pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
+				sws_scale(sws_ctx, (uint8_t const * const *) pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
 
 				// Save the frame to disk.
-				if(++i<=5) {
+				if (++i <= 5) {
 					SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, i);
 				}
 			}
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
 		//av_free_packet(&packet); // Deprecated.
 		av_packet_unref(&packet);
 	}
-  
+
 	// Free the RGB image.
 	av_free(buffer);
 	av_frame_free(&pFrameRGB);
