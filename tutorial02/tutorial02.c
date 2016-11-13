@@ -32,7 +32,7 @@
 #include <SDL_thread.h>
 
 #ifdef __MINGW32__
-#undef main /* Prevents SDL from overriding main() */
+#undef main // Prevents SDL from overriding main().
 #endif
 
 #include <stdio.h>
