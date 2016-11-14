@@ -172,7 +172,7 @@ void audio_callback(void *userdata, Uint8 *stream, int len) {
 	static unsigned int audio_buf_size = 0;
 	static unsigned int audio_buf_index = 0;
 	
-	while(len > 0) {
+	while (len > 0) {
 		if (audio_buf_index >= audio_buf_size) {
 			// We have already sent all our data; get more.
 			audio_size = audio_decode_frame(aCodecCtx, audio_buf, audio_buf_size);
@@ -361,7 +361,7 @@ int main(int argc, char *argv[]) {
 			av_packet_unref(&packet);
 		}
 
-		
+
 		SDL_PollEvent(&event);
 		switch (event.type) {
 			case SDL_QUIT:
