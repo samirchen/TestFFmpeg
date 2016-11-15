@@ -66,7 +66,7 @@ typedef struct PacketQueue {
 
 typedef struct VideoPicture {
 	SDL_Overlay *bmp;
-	int width, height; // Source height & width..
+	int width, height; // Source height & width.
 	int allocated;
 } VideoPicture;
 
@@ -101,6 +101,7 @@ typedef struct VideoState {
 } VideoState;
 
 SDL_Surface *screen;
+SDL_mutex *screen_mutex;
 
 // Since we only have one decoding thread, the Big Struct can be global in case we need it.
 VideoState *global_video_state;
@@ -289,7 +290,9 @@ void video_display(VideoState *is) {
 		rect.y = y;
 		rect.w = w;
 		rect.h = h;
+		SDL_LockMutex(screen_mutex);
 		SDL_DisplayYUVOverlay(vp->bmp, &rect);
+		SDL_UnlockMutex(screen_mutex);
 	}
 }
 
@@ -336,7 +339,9 @@ void alloc_picture(void *userdata) {
 		SDL_FreeYUVOverlay(vp->bmp);
 	}
 	// Allocate a place to put our YUV image on that screen.
+	SDL_LockMutex(screen_mutex);
 	vp->bmp = SDL_CreateYUVOverlay(is->video_st->codec->width, is->video_st->codec->height, SDL_YV12_OVERLAY, screen);
+	SDL_UnlockMutex(screen_mutex);
 	vp->width = is->video_st->codec->width;
 	vp->height = is->video_st->codec->height;
 	
@@ -352,7 +357,7 @@ int queue_picture(VideoState *is, AVFrame *pFrame) {
 	VideoPicture *vp;
 	AVFrame pict;
 	
-	// wait until we have space for a new pic.
+	// Wait until we have space for a new pic.
 	SDL_LockMutex(is->pictq_mutex);
 	while (is->pictq_size >= VIDEO_PICTURE_QUEUE_SIZE && !is->quit) {
 		SDL_CondWait(is->pictq_cond, is->pictq_mutex);
@@ -386,8 +391,8 @@ int queue_picture(VideoState *is, AVFrame *pFrame) {
 			return -1;
 		}
 	}
-	// We have a place to put our picture on the queue.
 	
+	// We have a place to put our picture on the queue.
 	if (vp->bmp) {
 		
 		SDL_LockYUVOverlay(vp->bmp);
@@ -417,7 +422,7 @@ int queue_picture(VideoState *is, AVFrame *pFrame) {
 }
 
 int video_thread(void *arg) {
-	VideoState *is = (VideoState *)arg;
+	VideoState *is = (VideoState *) arg;
 	AVPacket pkt1, *packet = &pkt1;
 	int frameFinished;
 	AVFrame *pFrame;
@@ -430,8 +435,7 @@ int video_thread(void *arg) {
 			break;
 		}
 		// Decode video frame.
-		avcodec_decode_video2(is->video_st->codec, pFrame, &frameFinished,
-							  packet);
+		avcodec_decode_video2(is->video_st->codec, pFrame, &frameFinished, packet);
 		
 		// Did we get a video frame?
 		if (frameFinished) {
@@ -588,7 +592,7 @@ int decode_thread(void *arg) {
 				break;
 			}
 		}
-		// Is this a packet from the video stream?.
+		// Is this a packet from the video stream?
 		if (packet->stream_index == is->videoStream) {
 			packet_queue_put(&is->videoq, packet);
 		} else if (packet->stream_index == is->audioStream) {
@@ -642,8 +646,10 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "SDL: could not set video mode - exiting\n");
 		exit(1);
 	}
+
+	screen_mutex = SDL_CreateMutex();
 	
-	av_strlcpy(is->filename, argv[1], 1024);
+	av_strlcpy(is->filename, argv[1], sizeof(is->filename));
 	
 	is->pictq_mutex = SDL_CreateMutex();
 	is->pictq_cond = SDL_CreateCond();
