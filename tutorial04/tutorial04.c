@@ -261,7 +261,6 @@ static void schedule_refresh(VideoState *is, int delay) {
 }
 
 void video_display(VideoState *is) {
-	
 	SDL_Rect rect;
 	VideoPicture *vp;
 	float aspect_ratio;
@@ -353,7 +352,6 @@ void alloc_picture(void *userdata) {
 }
 
 int queue_picture(VideoState *is, AVFrame *pFrame) {
-	
 	VideoPicture *vp;
 	AVFrame pict;
 	
@@ -391,7 +389,7 @@ int queue_picture(VideoState *is, AVFrame *pFrame) {
 			return -1;
 		}
 	}
-	
+
 	// We have a place to put our picture on the queue.
 	if (vp->bmp) {
 		
