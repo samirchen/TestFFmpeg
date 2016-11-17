@@ -16,7 +16,7 @@
 //
 // $ gcc -o tutorial03 tutorial03.c -lavutil -lavformat -lavcodec -lswscale -lz -lm `sdl-config --cflags --libs`
 //
-// to build (assuming libavformat and libavcodec are correctly installed your system).
+// to build (assuming libavutil/libavformat/libavcodec/libswscale are correctly installed your system).
 //
 // Run using
 //
