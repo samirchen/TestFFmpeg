@@ -518,10 +518,7 @@ void alloc_picture(void *userdata) {
 		SDL_FreeYUVOverlay(vp->bmp);
 	}
 	// Allocate a place to put our YUV image on that screen.
-	vp->bmp = SDL_CreateYUVOverlay(is->video_st->codec->width,
-								   is->video_st->codec->height,
-								   SDL_YV12_OVERLAY,
-								   screen);
+	vp->bmp = SDL_CreateYUVOverlay(is->video_st->codec->width, is->video_st->codec->height, SDL_YV12_OVERLAY, screen);
 	vp->width = is->video_st->codec->width;
 	vp->height = is->video_st->codec->height;
 	

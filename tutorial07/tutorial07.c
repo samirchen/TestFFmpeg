@@ -942,7 +942,7 @@ int decode_thread(void *arg) {
 				stream_index = is->audioStream;
 			}
 			
-			if (stream_index>=0){
+			if (stream_index >= 0){
 				seek_target= av_rescale_q(seek_target, AV_TIME_BASE_Q, pFormatCtx->streams[stream_index]->time_base);
 			}
 			if (av_seek_frame(is->pFormatCtx, stream_index, seek_target, is->seek_flags) < 0) {
@@ -1047,7 +1047,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	av_init_packet(&flush_pkt);
-	flush_pkt.data = (unsigned char *)"FLUSH";
+	flush_pkt.data = (unsigned char *) "FLUSH";
 	
 	for (;;) {
 		double incr, pos;
