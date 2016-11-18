@@ -284,7 +284,7 @@ int synchronize_audio(VideoState *is, short *samples, int samples_size, double p
 						
 						// Add samples by copying final sample.
 						nb = (samples_size - wanted_size);
-						samples_end = (uint8_t *)samples + samples_size - n;
+						samples_end = (uint8_t *) samples + samples_size - n;
 						q = samples_end + n;
 						while (nb > 0) {
 							memcpy(q, samples_end, n);
